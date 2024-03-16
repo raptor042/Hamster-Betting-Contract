@@ -60,6 +60,8 @@ contract Betting {
 
     mapping (address => User) public users;
 
+    User[] public _users;
+
     event User_Created(address indexed user);
 
     event Betting_Round_Started();
@@ -70,7 +72,13 @@ contract Betting {
 
     event Withdrawal(address indexed user, uint256 amount);
 
-    constructor(uint256 _fee) {
+    constructor(
+        uint256 _fee,
+        string memory hamsterA,
+        string memory hamsterB,
+        string memory hamsterC,
+        string memory hamsterD
+    ) {
         owner = msg.sender;
 
         fee = _fee;
@@ -80,7 +88,7 @@ contract Betting {
         Staker[] memory _stakers;
 
         rockyPool = Pool({
-            hamster: "Rocky",
+            hamster: hamsterA,
             wins: 0,
             losses: 0,
             balance: 0,
@@ -88,7 +96,7 @@ contract Betting {
         });
 
         charliePool = Pool({
-            hamster: "Charlie",
+            hamster: hamsterB,
             wins: 0,
             losses: 0,
             balance: 0,
@@ -96,7 +104,7 @@ contract Betting {
         });
 
         teddyPool = Pool({
-            hamster: "Teddy",
+            hamster: hamsterC,
             wins: 0,
             losses: 0,
             balance: 0,
@@ -104,7 +112,7 @@ contract Betting {
         });
 
         oliverPool = Pool({
-            hamster: "Oliver",
+            hamster: hamsterD,
             wins: 0,
             losses: 0,
             balance: 0,
@@ -117,7 +125,23 @@ contract Betting {
         _;
     }
 
+    function userExists(address user) internal view returns (bool) {
+        bool user_exist = false;
+
+        for(uint256 i = 0; i < _users.length; i++) {
+            if(_users[i].user == user) {
+                user_exist = true;
+
+                break;
+            }
+        }
+
+        return user_exist;
+    }
+
     function createUser() public {
+        require(userExists(msg.sender), "You already have an account");
+
         Bet[] memory _bets;
 
         User memory _user = User({
@@ -127,6 +151,8 @@ contract Betting {
         });
 
         users[msg.sender] = _user;
+
+        _users.push(_user);
 
         emit User_Created(msg.sender);
     }
