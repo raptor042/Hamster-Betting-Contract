@@ -7,7 +7,7 @@
 const hre = require("hardhat");
 
 async function main() {
-  const betting = await hre.ethers.deployContract("Betting", [10, "Buster", "Milo", "Popcorn", "Sparky"]);
+  const betting = await hre.ethers.deployContract("Betting", [5, "Hamster A", "Hamster B", "Hamster C", "Hamster D"]);
 
   await betting.waitForDeployment();
 

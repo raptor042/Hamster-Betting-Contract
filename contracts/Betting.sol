@@ -42,7 +42,13 @@ contract Betting {
 
     address public owner;
 
+    mapping (address => bool) public admin;
+
     uint256 public fee;
+
+    uint256 public duration;
+
+    uint256 public timestamp;
 
     uint256 public minBet = 0.005 ether;
 
@@ -50,13 +56,13 @@ contract Betting {
 
     Status public status;
 
-    Pool public rockyPool;
+    Pool public hamsterAPool;
 
-    Pool public charliePool;
+    Pool public hamsterBPool;
 
-    Pool public teddyPool;
+    Pool public hamsterCPool;
 
-    Pool public oliverPool;
+    Pool public hamsterDPool;
 
     mapping (address => User) public users;
 
@@ -64,7 +70,7 @@ contract Betting {
 
     event User_Created(address indexed user);
 
-    event Betting_Round_Started();
+    event Betting_Round_Started(uint256 duration);
 
     event Betting_Round_Ended(uint256 winner);
 
@@ -81,13 +87,21 @@ contract Betting {
     ) {
         owner = msg.sender;
 
+        admin[owner] = true;
+
+        require(_fee <= 10, "Fee must not be greater than 10%");
+
         fee = _fee;
 
         status = Status.Inactive;
 
+        duration = 0;
+
+        timestamp = 0;
+
         Staker[] memory _stakers;
 
-        rockyPool = Pool({
+        hamsterAPool = Pool({
             hamster: hamsterA,
             wins: 0,
             losses: 0,
@@ -95,7 +109,7 @@ contract Betting {
             stakers: _stakers
         });
 
-        charliePool = Pool({
+        hamsterBPool = Pool({
             hamster: hamsterB,
             wins: 0,
             losses: 0,
@@ -103,7 +117,7 @@ contract Betting {
             stakers: _stakers
         });
 
-        teddyPool = Pool({
+        hamsterCPool = Pool({
             hamster: hamsterC,
             wins: 0,
             losses: 0,
@@ -111,7 +125,7 @@ contract Betting {
             stakers: _stakers
         });
 
-        oliverPool = Pool({
+        hamsterDPool = Pool({
             hamster: hamsterD,
             wins: 0,
             losses: 0,
@@ -123,6 +137,21 @@ contract Betting {
     modifier onlyOwner {
         require(msg.sender == owner, "Only owner can call this function.");
         _;
+    }
+
+    modifier onlyAdmin {
+        require(admin[msg.sender], "Only admin can call this function.");
+        _;
+    }
+
+    function addAdmin(address _admin) public onlyOwner {
+        admin[_admin] = true;
+    }
+
+    function changeFee(uint256 _fee) public onlyAdmin {
+        require(_fee <= 10, "Fee must not be greater than 10%");
+
+        fee = _fee;
     }
 
     function userExists(address user) internal view returns (bool) {
@@ -140,7 +169,7 @@ contract Betting {
     }
 
     function createUser() public {
-        require(userExists(msg.sender), "You already have an account");
+        require(!userExists(msg.sender), "You already have an account");
 
         Bet[] memory _bets;
 
@@ -157,38 +186,50 @@ contract Betting {
         emit User_Created(msg.sender);
     }
 
-    function start_betting_round() public onlyOwner {
+    function start_betting_round(uint256 _duration) public onlyAdmin {
         status = Status.Active;
+
+        duration = _duration;
+
+        timestamp = block.timestamp;
 
         Staker[] memory _stakers;
 
-        rockyPool.balance = 0;
-        rockyPool.stakers = _stakers;
+        hamsterAPool.balance = 0;
+        hamsterAPool.stakers = _stakers;
 
-        charliePool.balance = 0;
-        charliePool.stakers = _stakers;
+        hamsterBPool.balance = 0;
+        hamsterBPool.stakers = _stakers;
 
-        teddyPool.balance = 0;
-        teddyPool.stakers = _stakers;
+        hamsterCPool.balance = 0;
+        hamsterCPool.stakers = _stakers;
 
-        oliverPool.balance = 0;
-        oliverPool.stakers = _stakers;
+        hamsterDPool.balance = 0;
+        hamsterDPool.stakers = _stakers;
 
-        emit Betting_Round_Started();
+        emit Betting_Round_Started(_duration);
     }
 
-    function stop_betting_round(uint256 winner) public onlyOwner {
+    function stop_betting_round(uint256 winner) public onlyAdmin {
+        uint256 timeElapsed = (block.timestamp - timestamp) / 60;
+
+        require(timeElapsed >= duration, "Betting duration not yet exceeded.");
+
         status = Status.Inactive;
 
-        uint256 totalDividends = rockyPool.balance + charliePool.balance + teddyPool.balance + oliverPool.balance;
+        duration = 0;
+
+        timestamp = 0;
+
+        uint256 totalDividends = hamsterAPool.balance + hamsterBPool.balance + hamsterCPool.balance + hamsterDPool.balance;
 
         if(winner == 1) {
-            for(uint256 i = 0; i < rockyPool.stakers.length; i++) {
-                Staker memory _staker = rockyPool.stakers[i];
+            for(uint256 i = 0; i < hamsterAPool.stakers.length; i++) {
+                Staker memory _staker = hamsterAPool.stakers[i];
                 address user = _staker.user;
                 uint256 amount = _staker.amount;
 
-                uint256 _dividend = (amount * totalDividends) / rockyPool.balance;
+                uint256 _dividend = (amount * totalDividends) / hamsterAPool.balance;
                 uint256 dividend = ((100 - fee) * _dividend) / 100;
 
                 users[user].balance += dividend;
@@ -196,45 +237,45 @@ contract Betting {
                 users[user].bets[_bets - 1].outcome = Outcome.Won;
             }
 
-            for(uint256 i = 0; i < charliePool.stakers.length; i++) {
-                Staker memory _staker = charliePool.stakers[i];
+            for(uint256 i = 0; i < hamsterBPool.stakers.length; i++) {
+                Staker memory _staker = hamsterBPool.stakers[i];
                 address user = _staker.user;
 
                 uint256 _bets = users[user].bets.length;
                 users[user].bets[_bets - 1].outcome = Outcome.Lost;
             }
 
-            for(uint256 i = 0; i < teddyPool.stakers.length; i++) {
-                Staker memory _staker = teddyPool.stakers[i];
+            for(uint256 i = 0; i < hamsterCPool.stakers.length; i++) {
+                Staker memory _staker = hamsterCPool.stakers[i];
                 address user = _staker.user;
 
                 uint256 _bets = users[user].bets.length;
                 users[user].bets[_bets - 1].outcome = Outcome.Lost;
             }
 
-            for(uint256 i = 0; i < oliverPool.stakers.length; i++) {
-                Staker memory _staker = oliverPool.stakers[i];
+            for(uint256 i = 0; i < hamsterDPool.stakers.length; i++) {
+                Staker memory _staker = hamsterDPool.stakers[i];
                 address user = _staker.user;
 
                 uint256 _bets = users[user].bets.length;
                 users[user].bets[_bets - 1].outcome = Outcome.Lost;
             }
 
-            rockyPool.balance = totalDividends;
-            charliePool.balance = 0;
-            teddyPool.balance = 0;
-            oliverPool.balance = 0;
-            rockyPool.wins += 1;
-            charliePool.losses += 1;
-            teddyPool.losses += 1;
-            oliverPool.losses += 1;
+            hamsterAPool.balance = totalDividends;
+            hamsterBPool.balance = 0;
+            hamsterCPool.balance = 0;
+            hamsterDPool.balance = 0;
+            hamsterAPool.wins += 1;
+            hamsterBPool.losses += 1;
+            hamsterCPool.losses += 1;
+            hamsterDPool.losses += 1;
         } else if(winner == 2) {
-            for(uint256 i = 0; i < charliePool.stakers.length; i++) {
-                Staker memory _staker = charliePool.stakers[i];
+            for(uint256 i = 0; i < hamsterBPool.stakers.length; i++) {
+                Staker memory _staker = hamsterBPool.stakers[i];
                 address user = _staker.user;
                 uint256 amount = _staker.amount;
 
-                uint256 _dividend = (amount * totalDividends) / charliePool.balance;
+                uint256 _dividend = (amount * totalDividends) / hamsterBPool.balance;
                 uint256 dividend = ((100 - fee) * _dividend) / 100;
 
                 users[user].balance += dividend;
@@ -242,45 +283,45 @@ contract Betting {
                 users[user].bets[_bets - 1].outcome = Outcome.Won;
             }
 
-            for(uint256 i = 0; i < rockyPool.stakers.length; i++) {
-                Staker memory _staker = rockyPool.stakers[i];
+            for(uint256 i = 0; i < hamsterAPool.stakers.length; i++) {
+                Staker memory _staker = hamsterAPool.stakers[i];
                 address user = _staker.user;
 
                 uint256 _bets = users[user].bets.length;
                 users[user].bets[_bets - 1].outcome = Outcome.Lost;
             }
 
-            for(uint256 i = 0; i < teddyPool.stakers.length; i++) {
-                Staker memory _staker = teddyPool.stakers[i];
+            for(uint256 i = 0; i < hamsterCPool.stakers.length; i++) {
+                Staker memory _staker = hamsterCPool.stakers[i];
                 address user = _staker.user;
 
                 uint256 _bets = users[user].bets.length;
                 users[user].bets[_bets - 1].outcome = Outcome.Lost;
             }
 
-            for(uint256 i = 0; i < oliverPool.stakers.length; i++) {
-                Staker memory _staker = oliverPool.stakers[i];
+            for(uint256 i = 0; i < hamsterDPool.stakers.length; i++) {
+                Staker memory _staker = hamsterDPool.stakers[i];
                 address user = _staker.user;
 
                 uint256 _bets = users[user].bets.length;
                 users[user].bets[_bets - 1].outcome = Outcome.Lost;
             }
 
-            charliePool.balance = totalDividends;
-            rockyPool.balance = 0;
-            teddyPool.balance = 0;
-            oliverPool.balance = 0;
-            charliePool.wins += 1;
-            rockyPool.losses += 1;
-            teddyPool.losses += 1;
-            oliverPool.losses += 1;
+            hamsterBPool.balance = totalDividends;
+            hamsterAPool.balance = 0;
+            hamsterCPool.balance = 0;
+            hamsterDPool.balance = 0;
+            hamsterBPool.wins += 1;
+            hamsterAPool.losses += 1;
+            hamsterCPool.losses += 1;
+            hamsterDPool.losses += 1;
         } else if(winner == 3) {
-            for(uint256 i = 0; i < teddyPool.stakers.length; i++) {
-                Staker memory _staker = teddyPool.stakers[i];
+            for(uint256 i = 0; i < hamsterCPool.stakers.length; i++) {
+                Staker memory _staker = hamsterCPool.stakers[i];
                 address user = _staker.user;
                 uint256 amount = _staker.amount;
 
-                uint256 _dividend = (amount * totalDividends) / teddyPool.balance;
+                uint256 _dividend = (amount * totalDividends) / hamsterCPool.balance;
                 uint256 dividend = ((100 - fee) * _dividend) / 100;
 
                 users[user].balance += dividend;
@@ -288,45 +329,45 @@ contract Betting {
                 users[user].bets[_bets - 1].outcome = Outcome.Won;
             }
 
-            for(uint256 i = 0; i < rockyPool.stakers.length; i++) {
-                Staker memory _staker = rockyPool.stakers[i];
+            for(uint256 i = 0; i < hamsterAPool.stakers.length; i++) {
+                Staker memory _staker = hamsterAPool.stakers[i];
                 address user = _staker.user;
 
                 uint256 _bets = users[user].bets.length;
                 users[user].bets[_bets - 1].outcome = Outcome.Lost;
             }
 
-            for(uint256 i = 0; i < charliePool.stakers.length; i++) {
-                Staker memory _staker = charliePool.stakers[i];
+            for(uint256 i = 0; i < hamsterBPool.stakers.length; i++) {
+                Staker memory _staker = hamsterBPool.stakers[i];
                 address user = _staker.user;
 
                 uint256 _bets = users[user].bets.length;
                 users[user].bets[_bets - 1].outcome = Outcome.Lost;
             }
 
-            for(uint256 i = 0; i < oliverPool.stakers.length; i++) {
-                Staker memory _staker = oliverPool.stakers[i];
+            for(uint256 i = 0; i < hamsterDPool.stakers.length; i++) {
+                Staker memory _staker = hamsterDPool.stakers[i];
                 address user = _staker.user;
 
                 uint256 _bets = users[user].bets.length;
                 users[user].bets[_bets - 1].outcome = Outcome.Lost;
             }
 
-            teddyPool.balance = totalDividends;
-            rockyPool.balance = 0;
-            charliePool.balance = 0;
-            oliverPool.balance = 0;
-            teddyPool.wins += 1;
-            rockyPool.losses += 1;
-            charliePool.losses += 1;
-            oliverPool.losses += 1;
+            hamsterCPool.balance = totalDividends;
+            hamsterAPool.balance = 0;
+            hamsterBPool.balance = 0;
+            hamsterDPool.balance = 0;
+            hamsterCPool.wins += 1;
+            hamsterAPool.losses += 1;
+            hamsterBPool.losses += 1;
+            hamsterDPool.losses += 1;
         } else if(winner == 4) {
-            for(uint256 i = 0; i < oliverPool.stakers.length; i++) {
-                Staker memory _staker = oliverPool.stakers[i];
+            for(uint256 i = 0; i < hamsterDPool.stakers.length; i++) {
+                Staker memory _staker = hamsterDPool.stakers[i];
                 address user = _staker.user;
                 uint256 amount = _staker.amount;
 
-                uint256 _dividend = (amount * totalDividends) / oliverPool.balance;
+                uint256 _dividend = (amount * totalDividends) / hamsterDPool.balance;
                 uint256 dividend = ((100 - fee) * _dividend) / 100;
 
                 users[user].balance += dividend;
@@ -334,38 +375,38 @@ contract Betting {
                 users[user].bets[_bets - 1].outcome = Outcome.Won;
             }
 
-            for(uint256 i = 0; i < rockyPool.stakers.length; i++) {
-                Staker memory _staker = rockyPool.stakers[i];
+            for(uint256 i = 0; i < hamsterAPool.stakers.length; i++) {
+                Staker memory _staker = hamsterAPool.stakers[i];
                 address user = _staker.user;
 
                 uint256 _bets = users[user].bets.length;
                 users[user].bets[_bets - 1].outcome = Outcome.Lost;
             }
 
-            for(uint256 i = 0; i < teddyPool.stakers.length; i++) {
-                Staker memory _staker = teddyPool.stakers[i];
+            for(uint256 i = 0; i < hamsterCPool.stakers.length; i++) {
+                Staker memory _staker = hamsterCPool.stakers[i];
                 address user = _staker.user;
 
                 uint256 _bets = users[user].bets.length;
                 users[user].bets[_bets - 1].outcome = Outcome.Lost;
             }
 
-            for(uint256 i = 0; i < charliePool.stakers.length; i++) {
-                Staker memory _staker = charliePool.stakers[i];
+            for(uint256 i = 0; i < hamsterBPool.stakers.length; i++) {
+                Staker memory _staker = hamsterBPool.stakers[i];
                 address user = _staker.user;
 
                 uint256 _bets = users[user].bets.length;
                 users[user].bets[_bets - 1].outcome = Outcome.Lost;
             }
 
-            oliverPool.balance = totalDividends;
-            rockyPool.balance = 0;
-            charliePool.balance = 0;
-            teddyPool.balance = 0;
-            oliverPool.wins += 1;
-            rockyPool.losses += 1;
-            teddyPool.losses += 1;
-            charliePool.losses += 1;
+            hamsterDPool.balance = totalDividends;
+            hamsterAPool.balance = 0;
+            hamsterBPool.balance = 0;
+            hamsterCPool.balance = 0;
+            hamsterDPool.wins += 1;
+            hamsterAPool.losses += 1;
+            hamsterCPool.losses += 1;
+            hamsterBPool.losses += 1;
         }
 
         emit Betting_Round_Ended(winner);
@@ -373,6 +414,10 @@ contract Betting {
 
     function place_bet(string memory _id, uint256 _bet) public payable {
         require(status == Status.Active, "Betting is not active at the moment.");
+
+        uint256 timeElapsed = (block.timestamp - timestamp) / 60;
+
+        require(timeElapsed <= duration, "Betting round is over.");
 
         require(msg.value >= minBet, "Minimum betting wager is 0.005 ETH.");
 
@@ -384,17 +429,17 @@ contract Betting {
         });
 
         if(_bet == 1) {
-            rockyPool.balance += msg.value;
-            rockyPool.stakers.push(staker);
+            hamsterAPool.balance += msg.value;
+            hamsterAPool.stakers.push(staker);
         } else if(_bet == 2) {
-            charliePool.balance += msg.value;
-            charliePool.stakers.push(staker);
+            hamsterBPool.balance += msg.value;
+            hamsterBPool.stakers.push(staker);
         }else if(_bet == 3) {
-            teddyPool.balance += msg.value;
-            teddyPool.stakers.push(staker);
+            hamsterCPool.balance += msg.value;
+            hamsterCPool.stakers.push(staker);
         }else if(_bet == 4) {
-            oliverPool.balance += msg.value;
-            oliverPool.stakers.push(staker);
+            hamsterDPool.balance += msg.value;
+            hamsterDPool.stakers.push(staker);
         }
 
         Bet memory bet = Bet({
@@ -413,19 +458,19 @@ contract Betting {
 
     function getStakers(uint256 hamster) public view returns (Staker[] memory stakers) {
         if(hamster == 1) {
-            Staker[] memory _stakers = rockyPool.stakers;
+            Staker[] memory _stakers = hamsterAPool.stakers;
 
             return _stakers;
         } else if(hamster == 2) {
-            Staker[] memory _stakers = charliePool.stakers;
+            Staker[] memory _stakers = hamsterBPool.stakers;
 
             return _stakers;
         } else if(hamster == 3) {
-            Staker[] memory _stakers = teddyPool.stakers;
+            Staker[] memory _stakers = hamsterCPool.stakers;
 
             return _stakers;
         } else if(hamster == 4) {
-            Staker[] memory _stakers = oliverPool.stakers;
+            Staker[] memory _stakers = hamsterDPool.stakers;
 
             return _stakers;
         }

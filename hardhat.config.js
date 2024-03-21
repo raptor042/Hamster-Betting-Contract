@@ -6,7 +6,8 @@ const {
   PRIVATE_KEY,
   SEPOLIA_API_URL,
   MAINNET_API_URL,
-  ETHERSCAN_API_KEY
+  ETHERSCAN_API_KEY,
+  BASE_API_KEY
 } = process.env;
 
 /** @type import('hardhat/config').HardhatUserConfig */
@@ -32,6 +33,16 @@ module.exports = {
       url: `${MAINNET_API_URL}`,
       accounts: [`0x${PRIVATE_KEY}`]
     },
+    base_mainnet: {
+      url: 'https://mainnet.base.org',
+      accounts: [`0x${PRIVATE_KEY}`],
+      gasPrice: 1000000000,
+    },
+    base_sepolia: {
+      url: 'https://sepolia.base.org',
+      accounts: [`0x${PRIVATE__KEY}`],
+      gasPrice: 1000000000,
+    }
   },
   paths: {
     sources: "./contracts",
@@ -42,7 +53,7 @@ module.exports = {
     timeout: 40000
   },
   etherscan: {
-    apiKey: ETHERSCAN_API_KEY
+    apiKey: BASE_API_KEY
   },
   sourcify: {
     enabled: true
