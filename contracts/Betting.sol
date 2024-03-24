@@ -46,6 +46,8 @@ contract Betting {
 
     uint256 public fee;
 
+    uint256 public fees;
+
     uint256 public duration;
 
     uint256 public timestamp;
@@ -94,6 +96,8 @@ contract Betting {
         require(_fee <= 10, "Fee must not be greater than 10%");
 
         fee = _fee;
+
+        fees = 0;
 
         status = Status.Inactive;
 
@@ -241,6 +245,9 @@ contract Betting {
                 users[user].balance += dividend;
                 uint256 _bets = users[user].bets.length;
                 users[user].bets[_bets - 1].outcome = Outcome.Won;
+
+                uint256 _fees = (fee * _dividend) / 100;
+                fees += _fees;
             }
 
             for(uint256 i = 0; i < hamsterBPool.stakers.length; i++) {
@@ -287,6 +294,9 @@ contract Betting {
                 users[user].balance += dividend;
                 uint256 _bets = users[user].bets.length;
                 users[user].bets[_bets - 1].outcome = Outcome.Won;
+
+                uint256 _fees = (fee * _dividend) / 100;
+                fees += _fees;
             }
 
             for(uint256 i = 0; i < hamsterAPool.stakers.length; i++) {
@@ -333,6 +343,9 @@ contract Betting {
                 users[user].balance += dividend;
                 uint256 _bets = users[user].bets.length;
                 users[user].bets[_bets - 1].outcome = Outcome.Won;
+
+                uint256 _fees = (fee * _dividend) / 100;
+                fees += _fees;
             }
 
             for(uint256 i = 0; i < hamsterAPool.stakers.length; i++) {
@@ -379,6 +392,9 @@ contract Betting {
                 users[user].balance += dividend;
                 uint256 _bets = users[user].bets.length;
                 users[user].bets[_bets - 1].outcome = Outcome.Won;
+
+                uint256 _fees = (fee * _dividend) / 100;
+                fees += _fees;
             }
 
             for(uint256 i = 0; i < hamsterAPool.stakers.length; i++) {
@@ -500,7 +516,7 @@ contract Betting {
     }
 
     function withdraw() public payable onlyOwner {
-        (bool os, ) = payable(owner).call{value: address(this).balance}("");
+        (bool os, ) = payable(owner).call{value: fees}("");
         require(os);
     }
 }
