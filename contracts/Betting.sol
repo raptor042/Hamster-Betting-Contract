@@ -72,7 +72,9 @@ contract Betting {
 
     event Betting_Round_Started(uint256 duration);
 
-    event Betting_Round_Ended(uint256 winner);
+    event Betting_Round_Ended();
+
+    event Winner(uint256 winner);
 
     event Bet_Placed(address indexed user, uint256 amount, uint256 bet);
 
@@ -210,8 +212,8 @@ contract Betting {
         emit Betting_Round_Started(_duration);
     }
 
-    function stop_betting_round(uint256 winner) public onlyAdmin {
-        uint256 timeElapsed = (block.timestamp - timestamp) / 60;
+    function stop_betting_round() public onlyAdmin {
+        uint256 timeElapsed = block.timestamp - timestamp;
 
         require(timeElapsed >= duration, "Betting duration not yet exceeded.");
 
@@ -221,6 +223,10 @@ contract Betting {
 
         timestamp = 0;
 
+        emit Betting_Round_Ended();
+    }
+
+    function pick_winner(uint256 winner) public onlyAdmin {
         uint256 totalDividends = hamsterAPool.balance + hamsterBPool.balance + hamsterCPool.balance + hamsterDPool.balance;
 
         if(winner == 1) {
@@ -409,13 +415,13 @@ contract Betting {
             hamsterBPool.losses += 1;
         }
 
-        emit Betting_Round_Ended(winner);
+        emit Winner(winner);
     }
 
     function place_bet(string memory _id, uint256 _bet) public payable {
         require(status == Status.Active, "Betting is not active at the moment.");
 
-        uint256 timeElapsed = (block.timestamp - timestamp) / 60;
+        uint256 timeElapsed = block.timestamp - timestamp;
 
         require(timeElapsed <= duration, "Betting round is over.");
 
