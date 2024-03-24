@@ -526,5 +526,7 @@ contract Betting {
     function withdraw() public payable onlyAdmin {
         (bool os, ) = payable(wallet).call{value: fees}("");
         require(os);
+
+        fees = 0;
     }
 }
