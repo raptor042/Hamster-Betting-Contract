@@ -48,6 +48,8 @@ contract Betting {
 
     uint256 public fees;
 
+    address public wallet;
+
     uint256 public duration;
 
     uint256 public timestamp;
@@ -98,6 +100,8 @@ contract Betting {
         fee = _fee;
 
         fees = 0;
+
+        wallet = msg.sender;
 
         status = Status.Inactive;
 
@@ -158,6 +162,10 @@ contract Betting {
         require(_fee <= 10, "Fee must not be greater than 10%");
 
         fee = _fee;
+    }
+
+    function changeWallet(address _wallet) public onlyAdmin {
+        wallet = _wallet;
     }
 
     function userExists(address user) internal view returns (bool) {
@@ -515,8 +523,8 @@ contract Betting {
         emit Withdrawal(msg.sender, _amount);
     }
 
-    function withdraw() public payable onlyOwner {
-        (bool os, ) = payable(owner).call{value: fees}("");
+    function withdraw() public payable onlyAdmin {
+        (bool os, ) = payable(wallet).call{value: fees}("");
         require(os);
     }
 }
