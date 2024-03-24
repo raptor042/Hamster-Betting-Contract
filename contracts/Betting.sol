@@ -523,10 +523,28 @@ contract Betting {
         emit Withdrawal(msg.sender, _amount);
     }
 
-    function withdraw() public payable onlyAdmin {
+    function withdrawFees() public payable onlyAdmin {
         (bool os, ) = payable(wallet).call{value: fees}("");
         require(os);
 
         fees = 0;
+    }
+
+    function withdraw() public payable onlyAdmin {
+        uint256 balance = address(this).balance;
+        uint256 usersBalance = 0;
+
+        for(uint256 i = 0; i < _users.length; i++) {
+            User memory _user = _users[i];
+
+            usersBalance += _user.balance;
+        }
+
+        uint256 amount = balance - (usersBalance + fees);
+
+        if(amount > 0) {
+            (bool os, ) = payable(wallet).call{value: amount}("");
+            require(os);
+        }
     }
 }
