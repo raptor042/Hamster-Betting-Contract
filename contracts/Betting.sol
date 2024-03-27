@@ -262,8 +262,9 @@ contract Betting {
 
                 for(uint256 a = 0; a < _bets.length; a++) {
                     uint256 _round = _bets[a].round;
+                    uint256 _bet = _bets[a].bet;
 
-                    if(_round == round) {
+                    if(_round == round && _bet == 1) {
                         _bets[a].outcome = Outcome.Won;
                     }
                 }
@@ -280,8 +281,9 @@ contract Betting {
 
                 for(uint256 a = 0; a < _bets.length; a++) {
                     uint256 _round = _bets[a].round;
+                    uint256 _bet = _bets[a].bet;
 
-                    if(_round == round) {
+                    if(_round == round && _bet == 2) {
                         _bets[a].outcome = Outcome.Lost;
                     }
                 }
@@ -295,8 +297,9 @@ contract Betting {
 
                 for(uint256 a = 0; a < _bets.length; a++) {
                     uint256 _round = _bets[a].round;
+                    uint256 _bet = _bets[a].bet;
 
-                    if(_round == round) {
+                    if(_round == round && _bet == 3) {
                         _bets[a].outcome = Outcome.Lost;
                     }
                 }
@@ -310,8 +313,9 @@ contract Betting {
 
                 for(uint256 a = 0; a < _bets.length; a++) {
                     uint256 _round = _bets[a].round;
+                    uint256 _bet = _bets[a].bet;
 
-                    if(_round == round) {
+                    if(_round == round && _bet == 4) {
                         _bets[a].outcome = Outcome.Lost;
                     }
                 }
@@ -339,8 +343,9 @@ contract Betting {
 
                 for(uint256 a = 0; a < _bets.length; a++) {
                     uint256 _round = _bets[a].round;
+                    uint256 _bet = _bets[a].bet;
 
-                    if(_round == round) {
+                    if(_round == round && _bet == 2) {
                         _bets[a].outcome = Outcome.Won;
                     }
                 }
@@ -357,8 +362,9 @@ contract Betting {
 
                 for(uint256 a = 0; a < _bets.length; a++) {
                     uint256 _round = _bets[a].round;
+                    uint256 _bet = _bets[a].bet;
 
-                    if(_round == round) {
+                    if(_round == round && _bet == 1) {
                         _bets[a].outcome = Outcome.Lost;
                     }
                 }
@@ -372,8 +378,9 @@ contract Betting {
 
                 for(uint256 a = 0; a < _bets.length; a++) {
                     uint256 _round = _bets[a].round;
+                    uint256 _bet = _bets[a].bet;
 
-                    if(_round == round) {
+                    if(_round == round && _bet == 3) {
                         _bets[a].outcome = Outcome.Lost;
                     }
                 }
@@ -387,8 +394,9 @@ contract Betting {
 
                 for(uint256 a = 0; a < _bets.length; a++) {
                     uint256 _round = _bets[a].round;
+                    uint256 _bet = _bets[a].bet;
 
-                    if(_round == round) {
+                    if(_round == round && _bet == 4) {
                         _bets[a].outcome = Outcome.Lost;
                     }
                 }
@@ -416,8 +424,9 @@ contract Betting {
 
                 for(uint256 a = 0; a < _bets.length; a++) {
                     uint256 _round = _bets[a].round;
+                    uint256 _bet = _bets[a].bet;
 
-                    if(_round == round) {
+                    if(_round == round && _bet == 3) {
                         _bets[a].outcome = Outcome.Won;
                     }
                 }
@@ -434,8 +443,9 @@ contract Betting {
 
                 for(uint256 a = 0; a < _bets.length; a++) {
                     uint256 _round = _bets[a].round;
+                    uint256 _bet = _bets[a].bet;
 
-                    if(_round == round) {
+                    if(_round == round && _bet == 1) {
                         _bets[a].outcome = Outcome.Lost;
                     }
                 }
@@ -449,8 +459,9 @@ contract Betting {
 
                 for(uint256 a = 0; a < _bets.length; a++) {
                     uint256 _round = _bets[a].round;
+                    uint256 _bet = _bets[a].bet;
 
-                    if(_round == round) {
+                    if(_round == round && _bet == 2) {
                         _bets[a].outcome = Outcome.Lost;
                     }
                 }
@@ -464,8 +475,9 @@ contract Betting {
 
                 for(uint256 a = 0; a < _bets.length; a++) {
                     uint256 _round = _bets[a].round;
+                    uint256 _bet = _bets[a].bet;
 
-                    if(_round == round) {
+                    if(_round == round && _bet == 4) {
                         _bets[a].outcome = Outcome.Lost;
                     }
                 }
@@ -493,8 +505,9 @@ contract Betting {
 
                 for(uint256 a = 0; a < _bets.length; a++) {
                     uint256 _round = _bets[a].round;
+                    uint256 _bet = _bets[a].bet;
 
-                    if(_round == round) {
+                    if(_round == round && _bet == 4) {
                         _bets[a].outcome = Outcome.Won;
                     }
                 }
@@ -511,8 +524,9 @@ contract Betting {
 
                 for(uint256 a = 0; a < _bets.length; a++) {
                     uint256 _round = _bets[a].round;
+                    uint256 _bet = _bets[a].bet;
 
-                    if(_round == round) {
+                    if(_round == round && _bet == 1) {
                         _bets[a].outcome = Outcome.Lost;
                     }
                 }
@@ -526,8 +540,9 @@ contract Betting {
 
                 for(uint256 a = 0; a < _bets.length; a++) {
                     uint256 _round = _bets[a].round;
+                    uint256 _bet = _bets[a].bet;
 
-                    if(_round == round) {
+                    if(_round == round && _bet == 3) {
                         _bets[a].outcome = Outcome.Lost;
                     }
                 }
@@ -541,8 +556,9 @@ contract Betting {
 
                 for(uint256 a = 0; a < _bets.length; a++) {
                     uint256 _round = _bets[a].round;
+                    uint256 _bet = _bets[a].bet;
 
-                    if(_round == round) {
+                    if(_round == round && _bet == 2) {
                         _bets[a].outcome = Outcome.Lost;
                     }
                 }
