@@ -35,6 +35,7 @@ contract Betting {
 
     struct Bet {
         string id;
+        uint256 round;
         uint256 amount;
         uint256 bet;
         Outcome outcome;
@@ -59,6 +60,8 @@ contract Betting {
     uint256 public maxBet = 100 ether;
 
     Status public status;
+
+    uint256 public round;
 
     Pool public hamsterAPool;
 
@@ -108,6 +111,8 @@ contract Betting {
         duration = 0;
 
         timestamp = 0;
+
+        round = 0;
 
         Staker[] memory _stakers;
 
@@ -207,6 +212,8 @@ contract Betting {
 
         timestamp = block.timestamp;
 
+        round += 1;
+
         Staker[] memory _stakers;
 
         hamsterAPool.balance = 0;
@@ -251,8 +258,15 @@ contract Betting {
                 uint256 dividend = ((100 - fee) * _dividend) / 100;
 
                 users[user].balance += dividend;
-                uint256 _bets = users[user].bets.length;
-                users[user].bets[_bets - 1].outcome = Outcome.Won;
+                Bet[] storage _bets = users[user].bets;
+
+                for(uint256 a = 0; a < _bets.length; a++) {
+                    uint256 _round = _bets[a].round;
+
+                    if(_round == round) {
+                        _bets[a].outcome = Outcome.Won;
+                    }
+                }
 
                 uint256 _fees = (fee * _dividend) / 100;
                 fees += _fees;
@@ -262,24 +276,45 @@ contract Betting {
                 Staker memory _staker = hamsterBPool.stakers[i];
                 address user = _staker.user;
 
-                uint256 _bets = users[user].bets.length;
-                users[user].bets[_bets - 1].outcome = Outcome.Lost;
+                Bet[] storage _bets = users[user].bets;
+
+                for(uint256 a = 0; a < _bets.length; a++) {
+                    uint256 _round = _bets[a].round;
+
+                    if(_round == round) {
+                        _bets[a].outcome = Outcome.Lost;
+                    }
+                }
             }
 
             for(uint256 i = 0; i < hamsterCPool.stakers.length; i++) {
                 Staker memory _staker = hamsterCPool.stakers[i];
                 address user = _staker.user;
 
-                uint256 _bets = users[user].bets.length;
-                users[user].bets[_bets - 1].outcome = Outcome.Lost;
+                Bet[] storage _bets = users[user].bets;
+
+                for(uint256 a = 0; a < _bets.length; a++) {
+                    uint256 _round = _bets[a].round;
+
+                    if(_round == round) {
+                        _bets[a].outcome = Outcome.Lost;
+                    }
+                }
             }
 
             for(uint256 i = 0; i < hamsterDPool.stakers.length; i++) {
                 Staker memory _staker = hamsterDPool.stakers[i];
                 address user = _staker.user;
 
-                uint256 _bets = users[user].bets.length;
-                users[user].bets[_bets - 1].outcome = Outcome.Lost;
+                Bet[] storage _bets = users[user].bets;
+
+                for(uint256 a = 0; a < _bets.length; a++) {
+                    uint256 _round = _bets[a].round;
+
+                    if(_round == round) {
+                        _bets[a].outcome = Outcome.Lost;
+                    }
+                }
             }
 
             hamsterAPool.balance = totalDividends;
@@ -300,8 +335,15 @@ contract Betting {
                 uint256 dividend = ((100 - fee) * _dividend) / 100;
 
                 users[user].balance += dividend;
-                uint256 _bets = users[user].bets.length;
-                users[user].bets[_bets - 1].outcome = Outcome.Won;
+                Bet[] storage _bets = users[user].bets;
+
+                for(uint256 a = 0; a < _bets.length; a++) {
+                    uint256 _round = _bets[a].round;
+
+                    if(_round == round) {
+                        _bets[a].outcome = Outcome.Won;
+                    }
+                }
 
                 uint256 _fees = (fee * _dividend) / 100;
                 fees += _fees;
@@ -311,24 +353,45 @@ contract Betting {
                 Staker memory _staker = hamsterAPool.stakers[i];
                 address user = _staker.user;
 
-                uint256 _bets = users[user].bets.length;
-                users[user].bets[_bets - 1].outcome = Outcome.Lost;
+                Bet[] storage _bets = users[user].bets;
+
+                for(uint256 a = 0; a < _bets.length; a++) {
+                    uint256 _round = _bets[a].round;
+
+                    if(_round == round) {
+                        _bets[a].outcome = Outcome.Lost;
+                    }
+                }
             }
 
             for(uint256 i = 0; i < hamsterCPool.stakers.length; i++) {
                 Staker memory _staker = hamsterCPool.stakers[i];
                 address user = _staker.user;
 
-                uint256 _bets = users[user].bets.length;
-                users[user].bets[_bets - 1].outcome = Outcome.Lost;
+                Bet[] storage _bets = users[user].bets;
+
+                for(uint256 a = 0; a < _bets.length; a++) {
+                    uint256 _round = _bets[a].round;
+
+                    if(_round == round) {
+                        _bets[a].outcome = Outcome.Lost;
+                    }
+                }
             }
 
             for(uint256 i = 0; i < hamsterDPool.stakers.length; i++) {
                 Staker memory _staker = hamsterDPool.stakers[i];
                 address user = _staker.user;
 
-                uint256 _bets = users[user].bets.length;
-                users[user].bets[_bets - 1].outcome = Outcome.Lost;
+                Bet[] storage _bets = users[user].bets;
+
+                for(uint256 a = 0; a < _bets.length; a++) {
+                    uint256 _round = _bets[a].round;
+
+                    if(_round == round) {
+                        _bets[a].outcome = Outcome.Lost;
+                    }
+                }
             }
 
             hamsterBPool.balance = totalDividends;
@@ -349,8 +412,15 @@ contract Betting {
                 uint256 dividend = ((100 - fee) * _dividend) / 100;
 
                 users[user].balance += dividend;
-                uint256 _bets = users[user].bets.length;
-                users[user].bets[_bets - 1].outcome = Outcome.Won;
+                Bet[] storage _bets = users[user].bets;
+
+                for(uint256 a = 0; a < _bets.length; a++) {
+                    uint256 _round = _bets[a].round;
+
+                    if(_round == round) {
+                        _bets[a].outcome = Outcome.Won;
+                    }
+                }
 
                 uint256 _fees = (fee * _dividend) / 100;
                 fees += _fees;
@@ -360,24 +430,45 @@ contract Betting {
                 Staker memory _staker = hamsterAPool.stakers[i];
                 address user = _staker.user;
 
-                uint256 _bets = users[user].bets.length;
-                users[user].bets[_bets - 1].outcome = Outcome.Lost;
+                Bet[] storage _bets = users[user].bets;
+
+                for(uint256 a = 0; a < _bets.length; a++) {
+                    uint256 _round = _bets[a].round;
+
+                    if(_round == round) {
+                        _bets[a].outcome = Outcome.Lost;
+                    }
+                }
             }
 
             for(uint256 i = 0; i < hamsterBPool.stakers.length; i++) {
                 Staker memory _staker = hamsterBPool.stakers[i];
                 address user = _staker.user;
 
-                uint256 _bets = users[user].bets.length;
-                users[user].bets[_bets - 1].outcome = Outcome.Lost;
+                Bet[] storage _bets = users[user].bets;
+
+                for(uint256 a = 0; a < _bets.length; a++) {
+                    uint256 _round = _bets[a].round;
+
+                    if(_round == round) {
+                        _bets[a].outcome = Outcome.Lost;
+                    }
+                }
             }
 
             for(uint256 i = 0; i < hamsterDPool.stakers.length; i++) {
                 Staker memory _staker = hamsterDPool.stakers[i];
                 address user = _staker.user;
 
-                uint256 _bets = users[user].bets.length;
-                users[user].bets[_bets - 1].outcome = Outcome.Lost;
+                Bet[] storage _bets = users[user].bets;
+
+                for(uint256 a = 0; a < _bets.length; a++) {
+                    uint256 _round = _bets[a].round;
+
+                    if(_round == round) {
+                        _bets[a].outcome = Outcome.Lost;
+                    }
+                }
             }
 
             hamsterCPool.balance = totalDividends;
@@ -398,8 +489,15 @@ contract Betting {
                 uint256 dividend = ((100 - fee) * _dividend) / 100;
 
                 users[user].balance += dividend;
-                uint256 _bets = users[user].bets.length;
-                users[user].bets[_bets - 1].outcome = Outcome.Won;
+                Bet[] storage _bets = users[user].bets;
+
+                for(uint256 a = 0; a < _bets.length; a++) {
+                    uint256 _round = _bets[a].round;
+
+                    if(_round == round) {
+                        _bets[a].outcome = Outcome.Won;
+                    }
+                }
 
                 uint256 _fees = (fee * _dividend) / 100;
                 fees += _fees;
@@ -409,24 +507,45 @@ contract Betting {
                 Staker memory _staker = hamsterAPool.stakers[i];
                 address user = _staker.user;
 
-                uint256 _bets = users[user].bets.length;
-                users[user].bets[_bets - 1].outcome = Outcome.Lost;
+                Bet[] storage _bets = users[user].bets;
+
+                for(uint256 a = 0; a < _bets.length; a++) {
+                    uint256 _round = _bets[a].round;
+
+                    if(_round == round) {
+                        _bets[a].outcome = Outcome.Lost;
+                    }
+                }
             }
 
             for(uint256 i = 0; i < hamsterCPool.stakers.length; i++) {
                 Staker memory _staker = hamsterCPool.stakers[i];
                 address user = _staker.user;
 
-                uint256 _bets = users[user].bets.length;
-                users[user].bets[_bets - 1].outcome = Outcome.Lost;
+                Bet[] storage _bets = users[user].bets;
+
+                for(uint256 a = 0; a < _bets.length; a++) {
+                    uint256 _round = _bets[a].round;
+
+                    if(_round == round) {
+                        _bets[a].outcome = Outcome.Lost;
+                    }
+                }
             }
 
             for(uint256 i = 0; i < hamsterBPool.stakers.length; i++) {
                 Staker memory _staker = hamsterBPool.stakers[i];
                 address user = _staker.user;
 
-                uint256 _bets = users[user].bets.length;
-                users[user].bets[_bets - 1].outcome = Outcome.Lost;
+                Bet[] storage _bets = users[user].bets;
+
+                for(uint256 a = 0; a < _bets.length; a++) {
+                    uint256 _round = _bets[a].round;
+
+                    if(_round == round) {
+                        _bets[a].outcome = Outcome.Lost;
+                    }
+                }
             }
 
             hamsterDPool.balance = totalDividends;
@@ -474,6 +593,7 @@ contract Betting {
 
         Bet memory bet = Bet({
             id: _id,
+            round: round,
             amount: msg.value,
             bet: _bet,
             outcome: Outcome.Pending
